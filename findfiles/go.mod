@@ -1,3 +1,3 @@
-module prolion.top/tools/findfiles
+module prolion.top/saber/findfiles
 
 go 1.17
