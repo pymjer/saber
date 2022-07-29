@@ -1,0 +1,41 @@
+# data
+data
+
+learn-go
+# maven ignore
+target/
+*.jar
+*.war
+*.zip
+*.tar
+*.class
+*.tar.gz
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+.vscode
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+out
+
+# system ignore
+.DS_Store
+Thumbs.db
+.gradle
+/spark-warehouse/
+/metastore_db/
+/sims-data/
+bin
