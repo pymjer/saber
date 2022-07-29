@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func FindFiles(content, dirPath string) {
+func FindFiles(content, dirPath, filter string) {
 	fmt.Printf("开始查找目录[%s]下文件中包含字符[%s]的情况。", dirPath, content)
-	files, dirs, _ := GetFilesAndDirs(dirPath)
+	files, dirs, _ := GetFilesAndDirs(dirPath, filter)
 	for _, dir := range dirs {
 		fmt.Printf("读取到文件夹：[%s]\n", dir)
 	}
@@ -33,7 +33,7 @@ func FindFiles(content, dirPath string) {
 	}
 }
 
-func GetFilesAndDirs(dirPath string) (files []string, dirs []string, err error) {
+func GetFilesAndDirs(dirPath string, filter string) (files []string, dirs []string, err error) {
 	dir, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		return nil, nil, err
@@ -42,12 +42,17 @@ func GetFilesAndDirs(dirPath string) (files []string, dirs []string, err error) 
 	for _, fi := range dir {
 		if fi.IsDir() {
 			dirs = append(dirs, dirPath+PthSep+fi.Name())
-			GetFilesAndDirs(dirPath + PthSep + fi.Name())
+			GetFilesAndDirs(dirPath+PthSep+fi.Name(), filter)
 		} else {
 			// 过滤文件类型
-			ok := strings.HasSuffix(fi.Name(), ".go")
-			if ok {
-				files = append(files, dirPath+PthSep+fi.Name())
+			fileName := dirPath + PthSep + fi.Name()
+			if filter != "" {
+				ok := strings.HasSuffix(fi.Name(), filter)
+				if ok {
+					files = append(files, fileName)
+				}
+			} else {
+				files = append(files, fileName)
 			}
 		}
 	}
@@ -71,10 +76,12 @@ func IsFileContainStr(filePath string, str string) (bool, string) {
 }
 
 func main() {
-	var content, dirPath string
+	var content, dirPath, filter string
 	fmt.Println("请输入想查询的字符串：")
 	fmt.Scanln(&content)
 	fmt.Println("请输入想查询的目录：")
 	fmt.Scanln(&dirPath)
-	FindFiles(content, dirPath)
+	fmt.Println("输入想要查找的文件后缀，默认所有文本文件：")
+	fmt.Scanln(&filter)
+	FindFiles(content, dirPath, filter)
 }
