@@ -27,3 +27,20 @@ func
 文件：[./1.go], 内容: func twoSum(nums []int, target int) []int {
 文件：[./10.go], 内容: func isMatch(s
 ```
+
+## hbaseutils工具
+操作hbase库，目前支持如下功能：
+根据前缀查询列值
+
+```shell
+$ hbaseutils
+请输入zk地址：
+zk.example.com
+请输入表名和前缀名，用空格分隔：
+test1201_0601 00
+row: 000:info:name/testvalue:0
+row: 001:info:name/testvalue:1
+row: 002:info:name/testvalue:2
+row: 003:info:name/testvalue:3
+row: 004:info:name/testvalue:4
+```
