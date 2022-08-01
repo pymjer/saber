@@ -148,6 +148,15 @@ func (u *HBaseUtils) ScanTable(tableName string, numberOfRows int) []*Cell {
 	return u.GetCells(scan)
 }
 
+func (u *HBaseUtils) ScanWithPrefixFilter(tableName string, prefix string) ([]*Cell, error) {
+	pFilter := filter.NewPrefixFilter([]byte(prefix))
+	scanReq, err := hrpc.NewScanStr(context.Background(), tableName, hrpc.Filters(pFilter))
+	if err != nil {
+		return nil, err
+	}
+	return u.GetCells(scanReq), nil
+}
+
 func (u *HBaseUtils) GetCells(scan *hrpc.Scan) []*Cell {
 	var rsp []*hrpc.Result
 	scanner := u.client.Scan(scan)
@@ -183,14 +192,4 @@ func uint64ToBytes(i uint64) []byte {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], i)
 	return buf[:]
-}
-
-func scanWithFilter(client gohbase.Client) error {
-	pFilter := filter.NewPrefixFilter([]byte("00"))
-	scanReq, err := hrpc.NewScanStr(context.Background(), "test1", hrpc.Filters(pFilter))
-	scanner := client.Scan(scanReq)
-	for rec, err := scanner.Next(); err == nil; rec, err = scanner.Next() {
-		fmt.Println(rec)
-	}
-	return err
 }

@@ -41,7 +41,7 @@ func TestInsertCell(t *testing.T) {
 	table, cf, qualifier := testTableName, testCf, testQualifier
 	var key, value string
 	for i := 0; i < 10; i++ {
-		key = fmt.Sprintf("00%d", i)
+		key = fmt.Sprintf("01%d", i)
 		value = fmt.Sprintf("testvalue:%d", i)
 		_, err := u.InsertCell(table, cf, qualifier, key, value)
 		if err != nil {
@@ -59,7 +59,7 @@ func TestInsertCell(t *testing.T) {
 func TestDelCell(t *testing.T) {
 	table, cf, qualifier := testTableName, testCf, testQualifier
 	for i := 0; i < 10; i++ {
-		key := fmt.Sprintf("00%d", i)
+		key := fmt.Sprintf("01%d", i)
 		_, err := u.DelCell(table, cf, qualifier, key)
 		if err != nil {
 			t.Fail()
@@ -98,6 +98,14 @@ func TestDeleteTable(t *testing.T) {
 
 func TestScanTable(t *testing.T) {
 	cells := u.ScanTable(testTableName, 2)
+	printCells(t, cells)
+}
+
+func TestScanWithPrefixFilter(t *testing.T) {
+	cells, err := u.ScanWithPrefixFilter(testTableName, "01")
+	if err != nil {
+		t.Fail()
+	}
 	printCells(t, cells)
 }
 
