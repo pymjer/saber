@@ -13,33 +13,61 @@ import (
 	"github.com/tsuna/gohbase/pb"
 )
 
+// Name of the meta region.
+const metaTableName = "hbase:meta"
+
+type HBaseUtils struct {
+	host   string
+	client gohbase.Client
+	ac     gohbase.AdminClient
+}
+
 type Cell struct {
 	Row    string
 	Column string
-	Value  []byte
+	Value  string
 }
 
-func CreateTable(host string, tableName string, family []string) error {
+func (c Cell) String() string {
+	return fmt.Sprintf("%s:%s/%s", c.Row, c.Column, c.Value)
+}
+
+func NewHBaseUtils(host string) *HBaseUtils {
+	u := HBaseUtils{host: host}
+	u.client = gohbase.NewClient(host)
+	u.ac = gohbase.NewAdminClient(host)
+	return &u
+}
+
+func (u *HBaseUtils) CreateTable(tableName string, family []string) error {
 	if family == nil || len(family) < 1 {
 		return fmt.Errorf("family can't be nil")
 	}
 	var cFamilies = make(map[string]map[string]string)
 	for _, f := range family {
-		cFamilies[f] = nil
+		cFamilies[f] = map[string]string{}
 	}
 
-	ac := gohbase.NewAdminClient(host)
 	crt := hrpc.NewCreateTable(context.Background(), []byte(tableName), cFamilies)
-	if err := ac.CreateTable(crt); err != nil {
+	if err := u.ac.CreateTable(crt); err != nil {
 		return fmt.Errorf("CreateTable returned an error: %v", err)
 	}
-
 	return nil
 }
 
-func FindTables(host string, reg string) []*pb.TableName {
-	ac := gohbase.NewAdminClient(host)
+func (u *HBaseUtils) DisableTable(tableName string) error {
+	dt := hrpc.NewDisableTable(context.Background(), []byte(tableName))
+	err := u.ac.DisableTable(dt)
+	return err
+}
 
+func (u *HBaseUtils) DeleteTable(tableName string) error {
+	dt := hrpc.NewDeleteTable(context.Background(), []byte(tableName))
+	err := u.ac.DeleteTable(dt)
+	return err
+}
+
+func (u *HBaseUtils) FindTables(reg string) []*pb.TableName {
 	tn, err := hrpc.NewListTableNames(
 		context.Background(),
 		hrpc.ListRegex(reg),
@@ -48,7 +76,7 @@ func FindTables(host string, reg string) []*pb.TableName {
 		log.Fatal(err)
 	}
 
-	names, err := ac.ListTableNames(tn)
+	names, err := u.ac.ListTableNames(tn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,16 +84,73 @@ func FindTables(host string, reg string) []*pb.TableName {
 	return names
 }
 
-func ScanTable(host string, tableName string, numberOfRows int) []*Cell {
+func (u *HBaseUtils) FindInMeta(tableName string) []*Cell {
+	metaKey := tableName + ","
+	keyFilter := filter.NewPrefixFilter([]byte(metaKey))
+	scan, err := hrpc.NewScanStr(context.Background(), metaTableName, hrpc.Filters(keyFilter))
+	if err != nil {
+		log.Fatalf("Failed to create Scan request: %s", err)
+	}
+
+	return u.GetCells(scan)
+}
+
+func (u *HBaseUtils) InsertCell(table, cf, qualifier, key, value string) (*hrpc.Result, error) {
+	values := map[string]map[string][]byte{cf: {qualifier: []byte(value)}}
+	putRequest, err := hrpc.NewPutStr(context.Background(), table, key, values)
+	if err != nil {
+		return nil, err
+	}
+	rsp, err := u.client.Put(putRequest)
+	return rsp, err
+}
+
+func (u *HBaseUtils) GetCell(table, cf, qualifier, key string) (*Cell, error) {
+	family := map[string][]string{cf: {qualifier}}
+	req, err := hrpc.NewGetStr(context.Background(), table, key,
+		hrpc.Families(family))
+	if err != nil {
+		return nil, err
+	}
+	rsp, err := u.client.Get(req)
+	cells := rsp.Cells
+	if len(cells) == 0 {
+		return nil, nil
+	}
+	return toCell(cells[0]), err
+}
+
+func (u *HBaseUtils) DelCell(table, cf, qualifier, key string) (*hrpc.Result, error) {
+	values := map[string]map[string][]byte{cf: {qualifier: nil}}
+	delReq, err := hrpc.NewDelStr(context.Background(), table, key, values)
+	if err != nil {
+		return nil, err
+	}
+	res, err := u.client.Delete(delReq)
+	return res, err
+}
+
+func (u *HBaseUtils) GetRow(table, key string) (*hrpc.Result, error) {
+	res, err := hrpc.NewGetStr(context.Background(), table, key)
+	if err != nil {
+		return nil, err
+	}
+	rsp, err := u.client.Get(res)
+	return rsp, err
+}
+
+func (u *HBaseUtils) ScanTable(tableName string, numberOfRows int) []*Cell {
 	table := []byte(tableName)
-	client := gohbase.NewClient(host)
 	scan, err := hrpc.NewScan(context.Background(), table, hrpc.NumberOfRows(uint32(numberOfRows)))
 	if err != nil {
 		log.Fatal(err)
 	}
+	return u.GetCells(scan)
+}
 
+func (u *HBaseUtils) GetCells(scan *hrpc.Scan) []*Cell {
 	var rsp []*hrpc.Result
-	scanner := client.Scan(scan)
+	scanner := u.client.Scan(scan)
 	for {
 		res, err := scanner.Next()
 		if err == io.EOF {
@@ -80,27 +165,24 @@ func ScanTable(host string, tableName string, numberOfRows int) []*Cell {
 	var cells []*Cell
 	for _, row := range rsp {
 		for _, cell := range row.Cells {
-			cells = append(cells, &Cell{
-				Row:    string(cell.Row),
-				Column: string(cell.Family) + ":" + string(cell.Qualifier),
-				Value:  cell.Value,
-			})
+			cells = append(cells, toCell(cell))
 		}
 	}
 	return cells
+}
+
+func toCell(cell *hrpc.Cell) *Cell {
+	return &Cell{
+		Row:    string(cell.Row),
+		Column: string(cell.Family) + ":" + string(cell.Qualifier),
+		Value:  string(cell.Value),
+	}
 }
 
 func uint64ToBytes(i uint64) []byte {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], i)
 	return buf[:]
-}
-
-func delCell(client gohbase.Client) (error, *hrpc.Result) {
-	values := map[string]map[string][]byte{"cf1": {"age": uint64ToBytes(18)}}
-	delReq, err := hrpc.NewDelStr(context.Background(), "test1", "000", values)
-	res, err := client.Delete(delReq)
-	return err, res
 }
 
 func scanWithFilter(client gohbase.Client) error {
@@ -111,27 +193,4 @@ func scanWithFilter(client gohbase.Client) error {
 		fmt.Println(rec)
 	}
 	return err
-}
-
-func getSpecificCell(client gohbase.Client) (error, *hrpc.Result) {
-	// Perform a get for the cell with key "15", column family "cf" and qualifier "a"
-	family := map[string][]string{"cf1": {"age"}}
-	getRequest, err := hrpc.NewGetStr(context.Background(), "test1", "000",
-		hrpc.Families(family))
-	rsp, err := client.Get(getRequest)
-
-	return err, rsp
-}
-
-func getCell(client gohbase.Client) (error, *hrpc.Result) {
-	getReq, err := hrpc.NewGetStr(context.Background(), "test1", "000")
-	rsp, err := client.Get(getReq)
-	return err, rsp
-}
-
-func insertCell(client gohbase.Client) (error, *hrpc.Result) {
-	values := map[string]map[string][]byte{"cf1": {"age": uint64ToBytes(18)}}
-	putRequest, err := hrpc.NewPutStr(context.Background(), "test1", "000", values)
-	rsp, err := client.Put(putRequest)
-	return err, rsp
 }
