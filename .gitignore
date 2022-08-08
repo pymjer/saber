@@ -1,6 +1,7 @@
 # data
 data
-
+pages
+*.txt
 learn-go
 # maven ignore
 target/

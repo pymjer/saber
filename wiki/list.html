@@ -1,0 +1,10 @@
+<h1>{{.Title |html}}</h1>
+
+<div>
+	{{range $i, $v := .Pages}}
+	<p>
+		{{$i}}. [<a href="/edit/{{$v |html}}">{{$v}}</a>]
+	</p>
+	{{end}}
+
+</div>
