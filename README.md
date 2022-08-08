@@ -44,3 +44,27 @@ row: 002:info:name/testvalue:2
 row: 003:info:name/testvalue:3
 row: 004:info:name/testvalue:4
 ```
+
+## bigmap工具
+基于badger开发的kv文件数据库，用于存储kv数据
+使用示例：
+```
+$ bigmap data
+当前数据目录为: data 
+badger 2022/08/05 15:03:38 INFO: All 0 tables opened in 0s
+> h
+quit,q 退出
+help,h 查看帮助
+list,l 查看所有key
+seek,s 根据指定前缀查找所有kv对
+get key 获取指定key的值
+put key value 添加/跟新指定key的值
+del key 删除指定key的值
+> put aa 11
+> put bb 22
+> get aa
+11
+> get bb
+22
+> q
+```
