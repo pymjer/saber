@@ -1,4 +1,4 @@
-package main
+package findfiles
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func FindFiles(content, dirPath, filter string) {
-	fmt.Printf("开始查找目录[%s]下文件中包含字符[%s]的情况。", dirPath, content)
+	fmt.Printf("开始查找目录[%s]下文件中包含字符[%s]的情况...\n", dirPath, content)
 	files, dirs, _ := GetFilesAndDirs(dirPath, filter)
 	for _, dir := range dirs {
 		fmt.Printf("读取到文件夹：[%s]\n", dir)
@@ -23,14 +23,19 @@ func FindFiles(content, dirPath, filter string) {
 		}
 	}
 	fmt.Printf("包含字符串[%s]的文件如下：\n", content)
-	for _, f := range containFiles {
-		fmt.Printf("文件：[%s], 内容: %s \n", f[0], f[1])
+	for i, f := range containFiles {
+		fmt.Printf("%d [%s], 内容: %s \n", i, f[0], f[1])
 	}
 
-	fmt.Printf("不包含字符串[%s]的文件如下：\n", content)
-	for _, f := range notContainFiles {
-		fmt.Printf("文件：[%s]\n", f[0])
+	if len(notContainFiles) > 1 {
+		fmt.Printf("不包含字符串[%s]的文件如下：\n", content)
+		for _, f := range notContainFiles {
+			fmt.Printf("文件：[%s]\n", f[0])
+		}
+	} else {
+		fmt.Printf("没有不包含字符串[%s]的文件\n", content)
 	}
+
 }
 
 func GetFilesAndDirs(dirPath string, filter string) (files []string, dirs []string, err error) {
@@ -75,11 +80,12 @@ func IsFileContainStr(filePath string, str string) (bool, string) {
 	return true, line
 }
 
-func main() {
-	var content, dirPath, filter string
+func FindFilesMain() {
+	var content, filter string
+	var dirPath = "."
 	fmt.Println("请输入想查询的字符串：")
 	fmt.Scanln(&content)
-	fmt.Println("请输入想查询的目录：")
+	fmt.Println("请输入想查询的目录(默认是当前目录)：")
 	fmt.Scanln(&dirPath)
 	fmt.Println("输入想要查找的文件后缀，默认所有文本文件：")
 	fmt.Scanln(&filter)
