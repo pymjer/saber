@@ -9,7 +9,7 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
-// Create
+// Set用于在db中添加一个键值对，如果添加失败会返回一个错误
 func Set(db *badger.DB, k string, v string) error {
 	txn := db.NewTransaction(true)
 	defer txn.Discard()
@@ -18,6 +18,7 @@ func Set(db *badger.DB, k string, v string) error {
 	return err
 }
 
+// SetWithTTL用于在db中添加一个有失效的键值对，时间单位为秒
 func SetWithTTL(db *badger.DB, key string, val string, second int) {
 	db.Update(func(txn *badger.Txn) error {
 		e := badger.NewEntry([]byte(key), []byte(val)).

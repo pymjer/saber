@@ -1,3 +1,4 @@
+// hbaseutils包实现了操作hbase库的常用工具
 package hbaseutils
 
 import (

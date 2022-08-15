@@ -22,6 +22,7 @@ type HBaseUtils struct {
 	ac     gohbase.AdminClient
 }
 
+// 一个Cell包含了HBase一个KV键值对信息
 type Cell struct {
 	Row    string
 	Column string

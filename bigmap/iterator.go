@@ -6,6 +6,7 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
+// 返回库中的所有key
 func AllKey(db *badger.DB) []string {
 	res := []string{}
 	db.View(func(txn *badger.Txn) error {
@@ -50,6 +51,7 @@ func Seek(db *badger.DB, prefix string) []KVPair {
 	return res
 }
 
+// 打印所有的键值对
 func All(db *badger.DB) error {
 	return db.View(func(txn *badger.Txn) error {
 		options := badger.DefaultIteratorOptions

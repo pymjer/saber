@@ -1,16 +1,53 @@
+// package bigmap 是一个小型的kv数据库
+// 使用命令如下
+// 	quit,q 退出
+// 	help,h 查看帮助
+// 	list,l 查看所有key
+// 	seek,s 根据指定前缀查找所有kv对
+// 	get key 获取指定key的值
+// 	put key value 添加/跟新指定key的值
+// 	del key 删除指定key的值
 package bigmap
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/dgraph-io/badger"
+	"prolion.top/saber/internal/base"
 )
 
-func BigMapMain() {
-	path := "./data"
-	fmt.Printf("请输入数据目录(默认为%s)：\n", path)
-	fmt.Scanln(&path)
+var CmdBigMap = &base.Command{
+	UsageLine: "saber bigmap [flags] [dirs]",
+	Short:     "A kvstore",
+	Long: `
+A kvstore to manager KV pairs
+
+quit,q 退出
+help,h 查看帮助
+list,l 查看所有key
+seek,s 根据指定前缀查找所有kv对
+get key 获取指定key的值
+put key value 添加/跟新指定key的值
+del key 删除指定key的值
+	`,
+}
+
+var dirPath = "./data"
+
+func init() {
+	CmdBigMap.Run = runBigMap
+}
+
+func runBigMap(ctx context.Context, cmd *base.Command, args []string) {
+	if len(args) >= 1 {
+		dirPath = args[len(args)-1]
+	}
+	BigMapMain(dirPath)
+}
+
+func BigMapMain(path string) {
 	fmt.Printf("当前数据目录为: %s \n", path)
 
 	db, err := badger.Open(badger.DefaultOptions(path))

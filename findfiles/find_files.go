@@ -1,12 +1,70 @@
+// findfiles包用于查找包含指定字符的文件
 package findfiles
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"prolion.top/saber/internal/base"
 )
 
+var CmdFindFiles = &base.Command{
+	Run:       runFindFiles,
+	UsageLine: "saber findfiles [flags] [dir]",
+	Short:     "find files in a dir",
+	Long: `
+FindFiles prints the file in the dir.
+
+FindFiles acceps zero, one, or two arguments.
+
+Given no arguments, that is, when run as 
+
+	saber findfiles
+
+it prints the current dir all files.
+
+The -c flag is content
+The -f flag is file suffix
+
+Examples:
+	saber findfiles -c content
+		Show files in current dir contain content
+	saber findfiles -c content -f filter
+		Show files 
+	`,
+}
+
+var (
+	content string
+	filter  string
+	dirPath = "."
+)
+
+func init() {
+	CmdFindFiles.Flag.StringVar(&content, "c", "", "查询内容")
+	CmdFindFiles.Flag.StringVar(&filter, "f", "", "查询文件后缀")
+}
+
+func runFindFiles(ctx context.Context, cmd *base.Command, args []string) {
+	if len(args) >= 1 {
+		dirPath = args[len(args)-1]
+	}
+	FindFiles(content, dirPath, filter)
+}
+
+func FindFilesMain() {
+	fmt.Println("请输入想查询的字符串：")
+	fmt.Scanln(&content)
+	fmt.Println("请输入想查询的目录(默认是当前目录)：")
+	fmt.Scanln(&dirPath)
+	fmt.Println("输入想要查找的文件后缀，默认所有文本文件：")
+	fmt.Scanln(&filter)
+}
+
+// 在给定目录中查找包含指定内容的文件，可以根据文件名过滤
 func FindFiles(content, dirPath, filter string) {
 	fmt.Printf("开始查找目录[%s]下文件中包含字符[%s]的情况...\n", dirPath, content)
 	files, dirs, _ := GetFilesAndDirs(dirPath, filter)
@@ -78,16 +136,4 @@ func IsFileContainStr(filePath string, str string) (bool, string) {
 	end := strings.Index(content[idx:], "\n")
 	line := content[idx : idx+end]
 	return true, line
-}
-
-func FindFilesMain() {
-	var content, filter string
-	var dirPath = "."
-	fmt.Println("请输入想查询的字符串：")
-	fmt.Scanln(&content)
-	fmt.Println("请输入想查询的目录(默认是当前目录)：")
-	fmt.Scanln(&dirPath)
-	fmt.Println("输入想要查找的文件后缀，默认所有文本文件：")
-	fmt.Scanln(&filter)
-	FindFiles(content, dirPath, filter)
 }

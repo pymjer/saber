@@ -1,6 +1,8 @@
 # Saber项目
 使用Go写的小些工具，供日常使用
 
+> 提示：使用命令`godoc -http=localhost:6060`启动文档服务器，打开浏览器输入`localhost:6060`查看详细文档
+
 ## 安装方法
 * 安装好Go环境
 * 进入工具目录，执行`go install`命令

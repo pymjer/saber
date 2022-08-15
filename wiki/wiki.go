@@ -1,3 +1,4 @@
+// wiki包是一个小型的文档管理服务器
 package main
 
 import (

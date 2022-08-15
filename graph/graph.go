@@ -1,3 +1,4 @@
+// graph包实现了一个简单的图数据库
 package graph
 
 import "container/list"
@@ -13,11 +14,12 @@ type Vertex struct {
 	name string // 顶点名称
 }
 
+// 基于邻接表的图存储
 type Graph struct {
 	adj []*list.List // 领接表
 	v   int          // 顶点个数
 }
 
-func (g *Graph) AddEdge()  {
-	
+func (g *Graph) AddEdge() {
+
 }

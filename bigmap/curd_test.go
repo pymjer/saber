@@ -25,7 +25,10 @@ func TestSet(t *testing.T) {
 		testname := fmt.Sprintf("put %s,%s", tt.key, tt.val)
 		t.Run(testname, func(t *testing.T) {
 			Set(db, tt.key, tt.val)
-			ans := Query(db, tt.key)
+			ans, err := Query(db, tt.key)
+			if err != nil {
+				t.Fail()
+			}
 			if ans != tt.val {
 				t.Errorf("return:%s, want %s", ans, tt.val)
 			}
