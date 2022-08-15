@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -63,6 +64,16 @@ func (c *Command) Usage() {
 	fmt.Fprintf(os.Stderr, "Run 'saber help %s' for details.\n", c.LongName())
 	SetExitStatus(2)
 	Exit()
+}
+
+func Fatalf(format string, args ...interface{}) {
+	Errorf(format, args...)
+	Exit()
+}
+
+func Errorf(format string, args ...interface{}) {
+	log.Printf(format, args...)
+	SetExitStatus(1)
 }
 
 var exitStatus = 0

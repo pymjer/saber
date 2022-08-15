@@ -7,6 +7,7 @@ import (
 
 	"prolion.top/saber/bigmap"
 	"prolion.top/saber/findfiles"
+	"prolion.top/saber/hbaseutils"
 	"prolion.top/saber/internal/base"
 	"prolion.top/saber/internal/help"
 )
@@ -15,6 +16,7 @@ func init() {
 	base.Saber.Commands = []*base.Command{
 		findfiles.CmdFindFiles,
 		bigmap.CmdBigMap,
+		hbaseutils.CmdHBaseUtil,
 	}
 }
 

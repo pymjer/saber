@@ -6,14 +6,13 @@ import (
 	"time"
 )
 
-var host string
 var testTableName string
 var testCf string
 var testQualifier string
 var u *HBaseUtils
 
 func init() {
-	host = "cdh1.iwellmass.com"
+	var host = "cdh1.iwellmass.com"
 	// testTableName = "test1_" + getTimestampString()
 	testTableName = "test1201_0601"
 	testCf = "info"
