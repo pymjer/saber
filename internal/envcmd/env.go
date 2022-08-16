@@ -54,6 +54,13 @@ func runEnv(ctx context.Context, cmd *base.Command, args []string) {
 	}
 
 	env := cfg.CmdEnv
+	if len(args) > 0 {
+		for _, name := range args {
+			fmt.Printf("%s\n", findEnv(env, name))
+		}
+		return
+	}
+
 	PrintEnv(os.Stdout, env)
 }
 
@@ -72,6 +79,15 @@ func PrintEnv(w io.Writer, env []cfg.EnvVar) {
 	for _, e := range env {
 		fmt.Fprintf(w, "%s=\"%s\"\n", e.Name, e.Value)
 	}
+}
+
+func findEnv(env []cfg.EnvVar, name string) string {
+	for _, e := range env {
+		if e.Name == name {
+			return e.Value
+		}
+	}
+	return ""
 }
 
 func runEnvW(args []string) {
