@@ -9,6 +9,8 @@ import (
 	"prolion.top/saber/findfiles"
 	"prolion.top/saber/hbaseutils"
 	"prolion.top/saber/internal/base"
+	"prolion.top/saber/internal/cfg"
+	"prolion.top/saber/internal/envcmd"
 	"prolion.top/saber/internal/help"
 )
 
@@ -17,6 +19,7 @@ func init() {
 		findfiles.CmdFindFiles,
 		bigmap.CmdBigMap,
 		hbaseutils.CmdHBaseUtil,
+		envcmd.CmdEnv,
 	}
 }
 
@@ -48,20 +51,17 @@ func main() {
 			return
 		}
 	}
-	// fmt.Printf("cmd:%s \n", cmd)
-	// switch cmd {
-	// case "findfiles", "1":
-	// 	findfiles.FindFilesMain()
-	// case "bigmap", "2":
-	// 	bigmap.BigMapMain()
-	// case "hbaseutils", "3":
-	// 	hbaseutils.HBaseUtilMain()
-	// default:
-	// 	log.Fatalf("未知命令: %s", cmd)
-	// }
 }
 
 func invoke(cmd *base.Command, args []string) {
+
+	cfg.CmdEnv = envcmd.MkEnv()
+	for _, env := range cfg.CmdEnv {
+		if os.Getenv(env.Name) != env.Value {
+			os.Setenv(env.Name, env.Value)
+		}
+	}
+
 	cmd.Flag.Usage = func() { cmd.Usage() }
 	cmd.Flag.Parse(args[1:])
 	args = cmd.Flag.Args()
