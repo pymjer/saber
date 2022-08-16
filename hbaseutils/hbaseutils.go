@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"prolion.top/saber/internal/base"
 )
@@ -43,11 +44,29 @@ func runHUtil(ctx context.Context, cmd *base.Command, args []string) {
 }
 
 func HBaseUtilMain() {
-	u := NewHBaseUtils(host)
-	cells, err := u.ScanWithPrefixFilter(table, prefix)
-	if err != nil {
-		log.Fatal(err)
+	if host == "" {
+		host = os.Getenv("ZK")
+		if host == "" {
+			base.Fatalf("unable to locate zookeeper host, use -h flag or saber env -w set zk")
+		}
 	}
+	fmt.Printf("connnect to zookeeper host: %s\n", host)
+
+	u := NewHBaseUtils(host)
+	if prefix != "" {
+		cells, err := u.ScanWithPrefixFilter(table, prefix)
+		if err != nil {
+			log.Fatal(err)
+		}
+		PrintCells(cells)
+		return
+	}
+
+	cells := u.ScanTable(table, 1)
+	PrintCells(cells)
+}
+
+func PrintCells(cells []*Cell) {
 	for _, cell := range cells {
 		fmt.Printf("row: %s\n", cell)
 	}
