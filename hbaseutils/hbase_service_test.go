@@ -12,12 +12,28 @@ var testQualifier string
 var u *HBaseUtils
 
 func init() {
-	var host = "cdh1.iwellmass.com"
+	var host = "zj01.iwellmass.com"
 	// testTableName = "test1_" + getTimestampString()
-	testTableName = "test1201_0601"
+	testTableName = "test0817"
 	testCf = "info"
 	testQualifier = "name"
 	u = NewHBaseUtils(host)
+}
+
+func TestListTable(t *testing.T) {
+	names := u.ListTables()
+
+	for _, n := range names {
+		t.Logf("name: %s \n", string(n.Qualifier))
+	}
+}
+
+func TestFindTables(t *testing.T) {
+	names := u.FindTables("zlx.*")
+
+	for _, n := range names {
+		t.Logf("name: %s \n", string(n.Qualifier))
+	}
 }
 
 func TestCreateTable(t *testing.T) {
@@ -40,7 +56,7 @@ func TestInsertCell(t *testing.T) {
 	table, cf, qualifier := testTableName, testCf, testQualifier
 	var key, value string
 	for i := 0; i < 10; i++ {
-		key = fmt.Sprintf("01%d", i)
+		key = fmt.Sprintf("02%d", i)
 		value = fmt.Sprintf("testvalue:%d", i)
 		_, err := u.InsertCell(table, cf, qualifier, key, value)
 		if err != nil {
@@ -76,14 +92,6 @@ func getTimestampString() string {
 	return fmt.Sprintf("%d", time.Now().UnixNano())
 }
 
-func TestListTable(t *testing.T) {
-	names := u.FindTables("test1_.*")
-
-	for _, n := range names {
-		t.Logf("name: %s \n", string(n.Qualifier))
-	}
-}
-
 func TestDeleteTable(t *testing.T) {
 	names := u.FindTables("test1_.*")
 
@@ -101,7 +109,7 @@ func TestScanTable(t *testing.T) {
 }
 
 func TestScanWithPrefixFilter(t *testing.T) {
-	cells, err := u.ScanWithPrefixFilter(testTableName, "01")
+	cells, err := u.ScanWithPrefixFilter(testTableName, "01", 5)
 	if err != nil {
 		t.Fail()
 	}

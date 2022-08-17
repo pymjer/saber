@@ -40,6 +40,39 @@ func NewHBaseUtils(host string) *HBaseUtils {
 	return &u
 }
 
+func (u *HBaseUtils) ListTables() []*pb.TableName {
+	tn, err := hrpc.NewListTableNames(
+		context.Background(),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	names, err := u.ac.ListTableNames(tn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return names
+}
+
+func (u *HBaseUtils) FindTables(reg string) []*pb.TableName {
+	tn, err := hrpc.NewListTableNames(
+		context.Background(),
+		hrpc.ListRegex(reg),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	names, err := u.ac.ListTableNames(tn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return names
+}
+
 func (u *HBaseUtils) CreateTable(tableName string, family []string) error {
 	if family == nil || len(family) < 1 {
 		return fmt.Errorf("family can't be nil")
@@ -66,23 +99,6 @@ func (u *HBaseUtils) DeleteTable(tableName string) error {
 	dt := hrpc.NewDeleteTable(context.Background(), []byte(tableName))
 	err := u.ac.DeleteTable(dt)
 	return err
-}
-
-func (u *HBaseUtils) FindTables(reg string) []*pb.TableName {
-	tn, err := hrpc.NewListTableNames(
-		context.Background(),
-		hrpc.ListRegex(reg),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	names, err := u.ac.ListTableNames(tn)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return names
 }
 
 func (u *HBaseUtils) FindInMeta(tableName string) []*Cell {
@@ -142,16 +158,17 @@ func (u *HBaseUtils) GetRow(table, key string) (*hrpc.Result, error) {
 
 func (u *HBaseUtils) ScanTable(tableName string, numberOfRows int) []*Cell {
 	table := []byte(tableName)
-	scan, err := hrpc.NewScan(context.Background(), table, hrpc.NumberOfRows(uint32(numberOfRows)))
+	// 如果想只获取指定条数，需要设置hrpc.CloseScanner()
+	scan, err := hrpc.NewScan(context.Background(), table, hrpc.NumberOfRows(uint32(numberOfRows)), hrpc.CloseScanner())
 	if err != nil {
 		log.Fatal(err)
 	}
 	return u.GetCells(scan)
 }
 
-func (u *HBaseUtils) ScanWithPrefixFilter(tableName string, prefix string) ([]*Cell, error) {
+func (u *HBaseUtils) ScanWithPrefixFilter(tableName string, prefix string, numberOfRows int) ([]*Cell, error) {
 	pFilter := filter.NewPrefixFilter([]byte(prefix))
-	scanReq, err := hrpc.NewScanStr(context.Background(), tableName, hrpc.Filters(pFilter))
+	scanReq, err := hrpc.NewScanStr(context.Background(), tableName, hrpc.Filters(pFilter), hrpc.NumberOfRows(uint32(numberOfRows)), hrpc.CloseScanner())
 	if err != nil {
 		return nil, err
 	}

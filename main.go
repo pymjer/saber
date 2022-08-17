@@ -50,6 +50,8 @@ func main() {
 			base.Exit()
 			return
 		}
+		base.Fatalf("no command[%s] found.", args[0])
+		return
 	}
 }
 
