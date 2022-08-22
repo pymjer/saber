@@ -16,7 +16,7 @@ var CmdHBaseUtil = &base.Command{
 	UsageLine: "saber hutil [-l] [-s] [-d] [-n]",
 	Short:     "hbase utils",
 	Long: `
-saber hutil	-h zk.example.com -l "tab.*"
+saber hutil	-h zk.example.com -l
 
 The -h flag is zookeeper 
 
@@ -115,7 +115,7 @@ func HBaseUtilMain(args []string) {
 		if len(args) < 1 {
 			base.Fatalf("saber hutil -d tablename: no table name")
 		}
-		fmt.Printf("确认要删除表[%s]吗？操作不可恢复 \n", strings.Join(args, ","))
+		fmt.Printf("确认要删除表[%s]吗？y/n, 操作不可恢复 \n", strings.Join(args, ","))
 		var ans string
 		fmt.Scanln(&ans)
 		if ans == "y" || ans == "yes" {
@@ -123,7 +123,11 @@ func HBaseUtilMain(args []string) {
 				fmt.Printf("begin delete table:[%s] \n", tableName)
 				err := u.DisableTable(tableName)
 				if err != nil {
-					base.Fatalf("disable table[%s] error: %v", tableName, err)
+					if !strings.Contains(err.Error(), "TableNotEnabledException") {
+						base.Fatalf("disable table[%s] error: %v", tableName, err)
+					} else {
+						fmt.Printf("table[%s] is disabled, continue.\n", tableName)
+					}
 				}
 				err = u.DeleteTable(tableName)
 				if err != nil {

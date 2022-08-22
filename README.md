@@ -8,6 +8,22 @@
 * 进入工具目录，执行`go install`命令
 * 执行命令
 
+跨平台构建方法
+
+```shell
+$ env GOOS=target-OS GOARCH=target-architecture go build package-import-path
+```
+
+window平台
+```
+$ env GOOS=windows GOARCH=amd64 go build .
+```
+
+Linux平台
+```
+$ env GOOS=linux GOARCH=amd64 go build .
+```
+
 ## 使用方法
 执行`saber help`查看当前支持的命令
 当前支持四种工具
@@ -18,6 +34,18 @@
 
 使用`saber help <command>`查看某个工具的使用方法
 
+## hutil 工具
+hutil 用户操作hbase表
+```
+## 查看test前缀表 
+$ saber hutil -h zk.example.com -l "test.*"
+
+## 删除表
+$ saber hutil -h zk.example.com -d table1 table2
+
+## 如果想省略-h的配置，可以设置为环境变量
+$ saber env -w ZK=zk.example.com
+```
 
 ## bigmap工具
 使用示例：
