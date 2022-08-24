@@ -12,6 +12,7 @@ import (
 	"prolion.top/saber/internal/cfg"
 	"prolion.top/saber/internal/envcmd"
 	"prolion.top/saber/internal/help"
+	"prolion.top/saber/replace"
 )
 
 func init() {
@@ -20,6 +21,7 @@ func init() {
 		bigmap.CmdBigMap,
 		hbaseutils.CmdHBaseUtil,
 		envcmd.CmdEnv,
+		replace.CmdReplaceFile,
 	}
 }
 
