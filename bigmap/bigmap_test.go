@@ -2,9 +2,7 @@ package bigmap
 
 import (
 	"fmt"
-	"log"
 	"testing"
-	"time"
 
 	"github.com/dgraph-io/badger"
 )
@@ -63,8 +61,11 @@ func TestSetWithTTL(t *testing.T) {
 	SetWithTTL(key, "aavalue", 3)
 	for i := 0; i < 5; i++ {
 		fmt.Printf("after %v second...\n", i)
-		time.Sleep(time.Second)
-		view(db, []byte(key))
+		// time.Sleep(time.Second)
+		err := view(db, []byte(key))
+		if i < 2 && err != nil {
+			t.Fail()
+		}
 	}
 }
 
@@ -72,7 +73,7 @@ func view(db *badger.DB, key []byte) error {
 	return db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get(key)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		meta := item.UserMeta()
 		valueCopy, err := item.ValueCopy(nil)
