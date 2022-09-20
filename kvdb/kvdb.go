@@ -8,7 +8,7 @@
 //	get key 获取指定key的值
 //	put key value 添加/跟新指定key的值
 //	del key 删除指定key的值
-package bigmap
+package kvdb
 
 import (
 	"context"
@@ -16,11 +16,12 @@ import (
 	"log"
 
 	"github.com/dgraph-io/badger"
+	"github.com/pymjer/bigmap"
 	"prolion.top/saber/internal/base"
 )
 
 var CmdBigMap = &base.Command{
-	UsageLine: "saber bigmap [flags] [dirs]",
+	UsageLine: "saber kvdb [flags] [dirs]",
 	Short:     "A kvstore",
 	Long: `
 A kvstore to manager KV pairs
@@ -51,7 +52,7 @@ func runBigMap(ctx context.Context, cmd *base.Command, args []string) {
 
 func BigMapMain(path string) {
 	fmt.Printf("当前数据目录为: %s \n", path)
-	Init(path)
+	bigmap.Init(path)
 	for {
 		fmt.Print("> ")
 		var cmd, key, val string
@@ -62,18 +63,18 @@ func BigMapMain(path string) {
 		case "help", "h":
 			printUsage()
 		case "list", "l":
-			keys := AllKey()
+			keys := bigmap.AllKey()
 			for _, v := range keys {
 				fmt.Printf("%v\n", v)
 			}
 		case "all", "a":
-			pairs := All()
+			pairs := bigmap.All()
 			printKVPairs(pairs)
 		case "seek", "s":
-			pairs := Seek(key)
+			pairs := bigmap.Seek(key)
 			printKVPairs(pairs)
 		case "get":
-			value, err := Query(key)
+			value, err := bigmap.Query(key)
 			if err == badger.ErrKeyNotFound {
 				log.Println(err)
 			} else if err != nil {
@@ -82,9 +83,9 @@ func BigMapMain(path string) {
 				fmt.Printf("%v\n", value)
 			}
 		case "put":
-			Set(key, val)
+			bigmap.Set(key, val)
 		case "del":
-			Delete(key)
+			bigmap.Delete(key)
 		case "":
 		default:
 			log.Fatalf("未知命令: %s", cmd)
@@ -92,7 +93,7 @@ func BigMapMain(path string) {
 	}
 }
 
-func printKVPairs(pairs []KVPair) {
+func printKVPairs(pairs []bigmap.KVPair) {
 	for _, v := range pairs {
 		fmt.Println(v)
 	}

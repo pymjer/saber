@@ -5,19 +5,19 @@ import (
 	"flag"
 	"os"
 
-	"prolion.top/saber/bigmap"
 	"prolion.top/saber/findfiles"
 	"prolion.top/saber/hbaseutils"
 	"prolion.top/saber/internal/base"
 	"prolion.top/saber/internal/cfg"
 	"prolion.top/saber/internal/envcmd"
 	"prolion.top/saber/internal/help"
+	"prolion.top/saber/kvdb"
 )
 
 func init() {
 	base.Saber.Commands = []*base.Command{
 		findfiles.CmdFindFiles,
-		bigmap.CmdBigMap,
+		kvdb.CmdBigMap,
 		hbaseutils.CmdHBaseUtil,
 		envcmd.CmdEnv,
 	}
