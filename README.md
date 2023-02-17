@@ -31,6 +31,7 @@ $ env GOOS=linux GOARCH=amd64 go build .
 * bigmap 基于badger开发的kv文件数据库，用于存储kv数据
 * hutil
 * env
+sabersaber* wiki 一个简单的wiki页面
 
 使用`saber help <command>`查看某个工具的使用方法
 
@@ -50,7 +51,7 @@ $ saber env -w ZK=zk.example.com
 ## bigmap工具
 使用示例：
 ```
-$ bigmap data
+$ saber bigmap data
 当前数据目录为: data 
 badger 2022/08/05 15:03:38 INFO: All 0 tables opened in 0s
 > h

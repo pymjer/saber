@@ -4,8 +4,18 @@ go 1.19
 
 require (
 	github.com/dgraph-io/badger v1.6.2
-	github.com/pymjer/bigmap v0.0.0-20220920083308-9f9ea0bda457
+	github.com/pymjer/bigmap/v2 v2.0.0
 	github.com/tsuna/gohbase v0.0.0-20220816120525-dab334d41b13
+)
+
+require (
+	github.com/dgraph-io/badger/v3 v3.2103.2 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
+	github.com/google/flatbuffers v1.12.1 // indirect
+	github.com/klauspost/compress v1.12.3 // indirect
+	go.opencensus.io v0.22.5 // indirect
 )
 
 require (
@@ -13,7 +23,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/dgraph-io/ristretto v0.0.2 // indirect
+	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect

@@ -16,7 +16,7 @@ import (
 	"log"
 
 	"github.com/dgraph-io/badger"
-	"github.com/pymjer/bigmap"
+	"github.com/pymjer/bigmap/v2"
 	"prolion.top/saber/internal/base"
 )
 
