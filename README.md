@@ -31,7 +31,7 @@ $ env GOOS=linux GOARCH=amd64 go build .
 * bigmap 基于badger开发的kv文件数据库，用于存储kv数据
 * hutil
 * env
-sabersaber* wiki 一个简单的wiki页面
+* wiki 一个简单的wiki页面
 
 使用`saber help <command>`查看某个工具的使用方法
 
