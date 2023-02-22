@@ -4,7 +4,6 @@ package findfiles
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -97,7 +96,7 @@ func FindFiles(content, dirPath, filter string) {
 }
 
 func GetFilesAndDirs(dirPath string, filter string) (files []string, dirs []string, err error) {
-	dir, err := ioutil.ReadDir(dirPath)
+	dir, err := os.ReadDir(dirPath)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -123,7 +122,7 @@ func GetFilesAndDirs(dirPath string, filter string) (files []string, dirs []stri
 }
 
 func IsFileContainStr(filePath string, str string) (bool, string) {
-	buf, err := ioutil.ReadFile(filePath)
+	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "File Error: %s\n", err)
 		panic(err.Error())

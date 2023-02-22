@@ -5,6 +5,7 @@
 
 ## 安装方法
 * 安装好Go环境
+* 构建代码
 * 进入工具目录，执行`go install`命令
 * 执行命令
 
@@ -12,6 +13,10 @@
 
 ```shell
 $ env GOOS=target-OS GOARCH=target-architecture go build package-import-path
+```
+mac平台
+```
+$ env GOOS=darwin GOARCH=amd64 go build .
 ```
 
 window平台
@@ -27,6 +32,7 @@ $ env GOOS=linux GOARCH=amd64 go build .
 ## 使用方法
 执行`saber help`查看当前支持的命令
 当前支持四种工具
+* simulate 一个模拟数据的小工具
 * findfiles
 * bigmap 基于badger开发的kv文件数据库，用于存储kv数据
 * hutil
@@ -34,6 +40,23 @@ $ env GOOS=linux GOARCH=amd64 go build .
 * wiki 一个简单的wiki页面
 
 使用`saber help <command>`查看某个工具的使用方法
+
+## simulate 工具
+Simulate 是一个模拟数据的小工具
+
+使用方法如下：
+```
+$ saber sdata -c id@int,name,age@int,amount@float -t json users.json
+```
+帮助文档
+```
+Column is a comma-separated field, the field defaults to string type, if the type is int or float, use the field@type
+
+The -c flag is columns
+The -n flag is the row numbers, default 100
+The -t flag is file type, support csv,json, default is csv
+The -f flag is the result file name. default is {current_time_stamp}.json
+```
 
 ## hutil 工具
 hutil 用户操作hbase表

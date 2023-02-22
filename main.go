@@ -12,6 +12,7 @@ import (
 	"prolion.top/saber/internal/envcmd"
 	"prolion.top/saber/internal/help"
 	"prolion.top/saber/kvdb"
+	"prolion.top/saber/simulate"
 )
 
 func init() {
@@ -20,6 +21,7 @@ func init() {
 		kvdb.CmdBigMap,
 		hbaseutils.CmdHBaseUtil,
 		envcmd.CmdEnv,
+		simulate.CmdSimulateData,
 	}
 }
 
