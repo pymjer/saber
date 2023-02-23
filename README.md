@@ -14,18 +14,15 @@
 ```shell
 $ env GOOS=target-OS GOARCH=target-architecture go build package-import-path
 ```
-mac平台
+示例
 ```
+// mac平台 x86核心
 $ env GOOS=darwin GOARCH=amd64 go build .
-```
-
-window平台
-```
+// mac平台 arm核心
+$ env GOOS=darwin GOARCH=arm go build .
+// window平台
 $ env GOOS=windows GOARCH=amd64 go build .
-```
-
-Linux平台
-```
+// Linux平台
 $ env GOOS=linux GOARCH=amd64 go build .
 ```
 
