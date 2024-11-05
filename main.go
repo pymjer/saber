@@ -5,6 +5,7 @@ import (
 	"flag"
 	"os"
 
+	"prolion.top/saber/csvutils"
 	"prolion.top/saber/findfiles"
 	"prolion.top/saber/hbaseutils"
 	"prolion.top/saber/internal/base"
@@ -22,6 +23,7 @@ func init() {
 		hbaseutils.CmdHBaseUtil,
 		envcmd.CmdEnv,
 		simulate.CmdSimulateData,
+		csvutils.CmdParseExcel,
 	}
 }
 
