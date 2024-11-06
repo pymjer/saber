@@ -17,7 +17,7 @@ $ env GOOS=target-OS GOARCH=target-architecture go build package-import-path
 示例
 ```
 // mac平台 x86核心
-$ env GOOS=darwin GOARCH=amd64 go build .
+$ env GOOS=darwin GOARCH=amd64 go build . && cp saber ~/Tools/bin
 // mac平台 arm核心
 $ env GOOS=darwin GOARCH=arm go build .
 // window平台
@@ -37,6 +37,13 @@ $ env GOOS=linux GOARCH=amd64 go build .
 * wiki 一个简单的wiki页面
 
 使用`saber help <command>`查看某个工具的使用方法
+
+## csvutils
+使用流式将excel转换为csv文件
+
+```
+saber csvutils -s true -b 10000 -t csv /Users/hawkins/Work/clouda-data/sample_2w.xlsx output
+```
 
 ## simulate 工具
 Simulate 是一个模拟数据的小工具

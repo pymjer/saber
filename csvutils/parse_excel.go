@@ -37,7 +37,7 @@ Examples:
 }
 
 var (
-	convertType = "excel"
+	convertType string
 	filePath    string
 	outputPath  string
 	stream      bool
@@ -45,7 +45,7 @@ var (
 )
 
 func init() {
-	CmdParseExcel.Flag.StringVar(&convertType, "t", "excel", "输出文件路径")
+	CmdParseExcel.Flag.StringVar(&convertType, "t", "csv", "输出文件路径")
 	CmdParseExcel.Flag.StringVar(&filePath, "f", "", "解析文件路径")
 	CmdParseExcel.Flag.StringVar(&outputPath, "o", ".", "输出文件路径")
 	CmdParseExcel.Flag.BoolVar(&stream, "s", false, "是否流式写入数据")
@@ -59,6 +59,7 @@ func runParseExcel(ctx context.Context, cmd *base.Command, args []string) {
 	}
 	log.Printf("begin parse file %s to %s , outputPath: %s, use stream:[%t]\n", filePath, convertType, outputPath, stream)
 	ParseExcel(filePath, outputPath, convertType, stream, batchSize)
+	log.Printf("parse success!\n")
 }
 
 // 将单个 Sheet 转换为新的 Excel 文件
@@ -142,7 +143,7 @@ func saveSheetAsCSV(f *excelize.File, sheetName, outputPath string) error {
 func ParseExcel(excelFile string, outputPath string, convertType string, stream bool, batchSize int) {
 	f, err := excelize.OpenFile(excelFile)
 	if err != nil {
-		fmt.Println("Error opening Excel file:", err)
+		log.Printf("Error opening Excel file:%s", err)
 		return
 	}
 	defer func() {
@@ -160,7 +161,7 @@ func ParseExcel(excelFile string, outputPath string, convertType string, stream 
 	// 获取所有 Sheet 名称
 	sheetNames := f.GetSheetList()
 
-	fmt.Printf("Excel file has %d sheets\n", len(sheetNames))
+	log.Printf("Excel file has %d sheets\n", len(sheetNames))
 
 	// 确保目录存在
 	if err = os.MkdirAll(outputPath, 0755); err != nil {
@@ -169,7 +170,7 @@ func ParseExcel(excelFile string, outputPath string, convertType string, stream 
 	}
 	// 将每个 Sheet 转换为 CSV or Excel 文件
 	for i, sheetName := range sheetNames {
-		fmt.Printf("parse sheet %d to %s\n", i, convertType)
+		log.Printf("parse sheet %d to %s\n", i, convertType)
 
 		var err error
 		var resultFile string
@@ -194,6 +195,6 @@ func ParseExcel(excelFile string, outputPath string, convertType string, stream 
 			fmt.Printf("Error saving sheet '%s' as %s: %v\n", sheetName, resultFile, err)
 			continue
 		}
-		fmt.Printf("Sheet '%s' has been saved as '%s'\n", sheetName, resultFile)
+		log.Printf("Sheet '%s' has been saved as '%s'\n", sheetName, resultFile)
 	}
 }

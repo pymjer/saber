@@ -3,6 +3,7 @@ package csvutils
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -29,7 +30,7 @@ func ExcelToCSVByStream(f *excelize.File, sheetName string, csvFile string, batc
 	// 获取总行数
 	totalRows := len(rows)
 	totalBatchs := (totalRows + batchSize - 1) / batchSize
-
+	log.Printf("sheet %s total rows %d , batchs: %d\n", sheetName, totalRows, totalBatchs)
 	// 初始化计数器
 	rowCount := 0
 	batchCount := 0
