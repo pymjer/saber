@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -150,6 +151,12 @@ func ParseExcel(excelFile string, outputPath string, convertType string, stream 
 		}
 	}()
 
+	// 获取文件名
+	fileName := filepath.Base(excelFile)
+
+	// 去掉文件扩展名
+	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
+
 	// 获取所有 Sheet 名称
 	sheetNames := f.GetSheetList()
 
@@ -168,14 +175,14 @@ func ParseExcel(excelFile string, outputPath string, convertType string, stream 
 		var resultFile string
 
 		if convertType == "excel" {
-			resultFile = fmt.Sprintf("%s/%s.xlsx", outputPath, sheetName)
+			resultFile = fmt.Sprintf("%s/%s-%s.xlsx", outputPath, fileName, sheetName)
 			if stream {
 				err = SaveSheetAsNewExcelByStream(f, sheetName, resultFile)
 			} else {
 				err = saveSheetAsNewExcel(f, sheetName, resultFile)
 			}
 		} else {
-			resultFile = fmt.Sprintf("%s/%s.csv", outputPath, sheetName)
+			resultFile = fmt.Sprintf("%s/%s-%s.csv", outputPath, fileName, sheetName)
 			if stream {
 				err = ExcelToCSVByStream(f, sheetName, resultFile, batchSize)
 			} else {

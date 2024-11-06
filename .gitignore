@@ -2,6 +2,7 @@
 build
 data
 pages
+output
 *.txt
 learn-go
 # maven ignore
